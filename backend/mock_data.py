@@ -21,7 +21,6 @@ LEAD_MESSAGES = [
         "allowed_style_ids": [
             "friendly",
             "direct",
-            "consultative",
             "ask_more_data",
         ],
     },
@@ -29,10 +28,8 @@ LEAD_MESSAGES = [
         "id": "urgent_deadline",
         "text": "Necesito tener algo funcionando para la semana que viene. ¿Se puede?",
         "allowed_style_ids": [
-            "friendly",
             "direct",
             "consultative",
-            "ask_more_data",
             "schedule_call",
         ],
     },
@@ -42,7 +39,6 @@ LEAD_MESSAGES = [
         "allowed_style_ids": [
             "friendly",
             "consultative",
-            "ask_more_data",
             "handle_objection",
         ],
     },
@@ -52,7 +48,6 @@ LEAD_MESSAGES = [
         "allowed_style_ids": [
             "friendly",
             "consultative",
-            "ask_more_data",
             "handle_objection",
         ],
     },
@@ -158,18 +153,17 @@ def validar_datos_simulados():
     reglas_esperadas = [
         {
             "id_mensaje": "price_question",
-            "permitidos": ["friendly", "direct", "consultative", "ask_more_data"],
-            "bloqueados": ["schedule_call", "handle_objection"],
+            "permitidos": ["friendly", "direct", "ask_more_data"],
+            "bloqueados": ["consultative", "schedule_call", "handle_objection"],
         },
         {
             "id_mensaje": "low_budget",
             "permitidos": [
                 "friendly",
                 "consultative",
-                "ask_more_data",
                 "handle_objection",
             ],
-            "bloqueados": ["direct", "schedule_call"],
+            "bloqueados": ["direct", "ask_more_data", "schedule_call"],
         },
         {
             "id_mensaje": "demo_request",
