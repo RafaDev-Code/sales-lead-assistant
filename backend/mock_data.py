@@ -109,6 +109,85 @@ ANALISIS_SIMULADOS = [
 ]
 
 
+RESPUESTAS_SIMULADAS = [
+    {
+        "id_mensaje": "price_question",
+        "id_estilo": "friendly",
+        "respuesta": "Hola, gracias por escribir. El precio depende del alcance que necesites. Si me contás qué querés resolver y para cuándo, puedo orientarte mejor.",
+    },
+    {
+        "id_mensaje": "price_question",
+        "id_estilo": "direct",
+        "respuesta": "Hola. Para pasarte un precio necesito saber el alcance del servicio y el plazo esperado. Con esos datos puedo darte una estimación más clara.",
+    },
+    {
+        "id_mensaje": "price_question",
+        "id_estilo": "ask_more_data",
+        "respuesta": "Hola. Para cotizar bien, necesito algunos datos: qué necesitás exactamente, para cuándo y si ya tenés alguna referencia de presupuesto.",
+    },
+    {
+        "id_mensaje": "urgent_deadline",
+        "id_estilo": "direct",
+        "respuesta": "Sí, puede ser posible, pero primero habría que definir el alcance mínimo para llegar bien a la semana que viene.",
+    },
+    {
+        "id_mensaje": "urgent_deadline",
+        "id_estilo": "consultative",
+        "respuesta": "Podemos evaluarlo. Lo importante es separar qué tiene que estar listo sí o sí y qué puede quedar para una segunda etapa.",
+    },
+    {
+        "id_mensaje": "urgent_deadline",
+        "id_estilo": "schedule_call",
+        "respuesta": "Coordinemos una llamada breve para revisar alcance y tiempos. Si te sirve, puedo proponerte dos horarios para hoy o mañana.",
+    },
+    {
+        "id_mensaje": "comparing_providers",
+        "id_estilo": "friendly",
+        "respuesta": "Perfecto, tiene sentido comparar antes de decidir. Si querés, te puedo contar en qué se diferencia mi propuesta y qué incluye.",
+    },
+    {
+        "id_mensaje": "comparing_providers",
+        "id_estilo": "consultative",
+        "respuesta": "Para ayudarte a comparar mejor, te preguntaría qué estás priorizando: precio, velocidad, soporte, calidad o experiencia previa.",
+    },
+    {
+        "id_mensaje": "comparing_providers",
+        "id_estilo": "handle_objection",
+        "respuesta": "Entiendo que estés comparando. La clave es mirar no solo el precio, sino también el alcance, los tiempos y el acompañamiento incluido.",
+    },
+    {
+        "id_mensaje": "low_budget",
+        "id_estilo": "friendly",
+        "respuesta": "Gracias por contármelo. Podemos buscar una opción más simple para empezar y dejar mejoras para una segunda etapa.",
+    },
+    {
+        "id_mensaje": "low_budget",
+        "id_estilo": "consultative",
+        "respuesta": "Podemos adaptarlo. Primero definiría qué es indispensable para que tengas valor rápido sin gastar de más.",
+    },
+    {
+        "id_mensaje": "low_budget",
+        "id_estilo": "handle_objection",
+        "respuesta": "Entiendo la limitación de presupuesto. Una alternativa es empezar con un alcance mínimo que resuelva lo más importante y escalar después.",
+    },
+    {
+        "id_mensaje": "demo_request",
+        "id_estilo": "friendly",
+        "respuesta": "Sí, claro. Podemos coordinar una llamada o demo rápida. Decime qué horarios te quedan cómodos y lo organizamos.",
+    },
+    {
+        "id_mensaje": "demo_request",
+        "id_estilo": "direct",
+        "respuesta": "Sí. Pasame dos horarios posibles y coordinamos una llamada breve para revisar tu caso.",
+    },
+    {
+        "id_mensaje": "demo_request",
+        "id_estilo": "schedule_call",
+        "respuesta": "Coordinemos una demo rápida. Te propongo una llamada de 20 minutos para entender tu necesidad y mostrarte cómo sería el flujo.",
+    },
+]
+
+
 # Funciones auxiliares
 
 def obtener_ids_de_estilos():
@@ -143,6 +222,14 @@ def buscar_analisis(id_mensaje):
             return analisis
 
     raise ValueError("Analisis desconocido: " + id_mensaje)
+
+
+def buscar_respuesta(id_mensaje, id_estilo):
+    for respuesta in RESPUESTAS_SIMULADAS:
+        if respuesta["id_mensaje"] == id_mensaje and respuesta["id_estilo"] == id_estilo:
+            return respuesta
+
+    raise ValueError("Respuesta desconocida")
 
 
 def obtener_estilos_permitidos(id_mensaje):
@@ -189,6 +276,22 @@ def analizar_mensaje(id_mensaje):
     }
 
 
+def generar_respuesta(id_mensaje, id_estilo):
+    mensaje = buscar_mensaje(id_mensaje)
+
+    if not estilo_esta_permitido(id_mensaje, id_estilo):
+        raise ValueError("El estilo no esta permitido para este mensaje")
+
+    respuesta = buscar_respuesta(id_mensaje, id_estilo)
+
+    return {
+        "id_mensaje": mensaje["id"],
+        "id_estilo": id_estilo,
+        "mensaje": mensaje["text"],
+        "respuesta": respuesta["respuesta"],
+    }
+
+
 def tiene_valores_repetidos(valores):
     valores_vistos = []
 
@@ -205,9 +308,13 @@ def validar_datos_simulados():
     ids_de_mensajes = obtener_ids_de_mensajes()
     ids_de_estilos = obtener_ids_de_estilos()
     ids_de_analisis = []
+    ids_de_respuestas = []
 
     for analisis in ANALISIS_SIMULADOS:
         ids_de_analisis.append(analisis["id_mensaje"])
+
+    for respuesta in RESPUESTAS_SIMULADAS:
+        ids_de_respuestas.append(respuesta["id_mensaje"] + ":" + respuesta["id_estilo"])
 
     if tiene_valores_repetidos(ids_de_mensajes):
         raise ValueError("Los ids de mensajes no se pueden repetir")
@@ -217,6 +324,9 @@ def validar_datos_simulados():
 
     if tiene_valores_repetidos(ids_de_analisis):
         raise ValueError("Los ids de analisis no se pueden repetir")
+
+    if tiene_valores_repetidos(ids_de_respuestas):
+        raise ValueError("Las respuestas simuladas no se pueden repetir")
 
     if len(LEAD_MESSAGES) != 5:
         raise ValueError("La demo debe empezar con cinco mensajes")
@@ -240,6 +350,19 @@ def validar_datos_simulados():
     for id_analisis in ids_de_analisis:
         if id_analisis not in ids_de_mensajes:
             raise ValueError("Hay un analisis para un mensaje que no existe")
+
+    for respuesta in RESPUESTAS_SIMULADAS:
+        id_mensaje = respuesta["id_mensaje"]
+        id_estilo = respuesta["id_estilo"]
+
+        if id_mensaje not in ids_de_mensajes:
+            raise ValueError("Hay una respuesta para un mensaje que no existe")
+
+        if id_estilo not in ids_de_estilos:
+            raise ValueError("Hay una respuesta con un estilo que no existe")
+
+        if not estilo_esta_permitido(id_mensaje, id_estilo):
+            raise ValueError("Hay una respuesta para un estilo no permitido")
 
     reglas_esperadas = [
         {
@@ -278,6 +401,7 @@ def mostrar_resumen_de_datos_simulados():
     print("Mensajes simulados:", len(LEAD_MESSAGES))
     print("Estilos de respuesta:", len(RESPONSE_STYLES))
     print("Analisis simulados:", len(ANALISIS_SIMULADOS))
+    print("Respuestas simuladas:", len(RESPUESTAS_SIMULADAS))
     print("Datos simulados validos")
 
 
