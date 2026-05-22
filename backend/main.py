@@ -6,6 +6,8 @@ from backend.mock_data import analizar_mensaje, obtener_ids_de_mensajes
 app = FastAPI()
 
 
+# Endpoints
+
 @app.get("/health")
 def verificar_salud():
     return {"status": "ok"}

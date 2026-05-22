@@ -4,6 +4,8 @@ Este archivo no usa FastAPI ni OpenAI. Solo define datos fijos y reglas
 simples para que la demo pueda funcionar en modo simulado.
 """
 
+# Datos simulados
+
 RESPONSE_STYLES = [
     {"id": "friendly", "label": "Amable"},
     {"id": "direct", "label": "Directa"},
@@ -107,6 +109,8 @@ ANALISIS_SIMULADOS = [
 ]
 
 
+# Funciones auxiliares
+
 def obtener_ids_de_estilos():
     ids_de_estilos = []
 
@@ -163,6 +167,8 @@ def estilo_esta_permitido(id_mensaje, id_estilo):
     estilos_permitidos = obtener_estilos_permitidos(id_mensaje)
     return id_estilo in estilos_permitidos
 
+
+# Funciones principales
 
 def analizar_mensaje(id_mensaje):
     mensaje = buscar_mensaje(id_mensaje)
