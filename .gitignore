@@ -1,0 +1,28 @@
+# Documentacion local
+*.md
+
+# Variables de entorno y secretos
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Frontend
+node_modules/
+dist/
+build/
+.vite/
+
+# Sistema y editores
+.DS_Store
+.idea/
+.vscode/
