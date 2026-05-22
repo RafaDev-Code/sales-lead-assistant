@@ -1,9 +1,13 @@
 const API_URL = "http://127.0.0.1:8000";
 
+// Estado de la pantalla
+
 let mensajes = [];
 let estilos = [];
 let mensajeElegido = null;
 let analisisRealizado = false;
+
+// Elementos del HTML que vamos a modificar
 
 const listaMensajes = document.querySelector("#lista-mensajes");
 const listaEstilos = document.querySelector("#lista-estilos");
@@ -13,6 +17,8 @@ const botonReiniciar = document.querySelector("#boton-reiniciar");
 const textoBrief = document.querySelector("#brief-comercial");
 const textoJson = document.querySelector("#json-tecnico");
 const textoRespuesta = document.querySelector("#respuesta-sugerida");
+
+// Funciones auxiliares
 
 function buscarMensaje(idMensaje) {
   for (const mensaje of mensajes) {
@@ -36,6 +42,8 @@ function mostrarError(mensaje) {
   textoRespuesta.textContent = mensaje;
 }
 
+// Pedidos al backend
+
 async function pedirJson(url) {
   const respuesta = await fetch(url);
 
@@ -55,6 +63,8 @@ async function cargarDatosIniciales() {
     mostrarError("No se pudo conectar con el backend.");
   }
 }
+
+// Acciones principales del usuario
 
 function elegirMensaje(idMensaje) {
   mensajeElegido = buscarMensaje(idMensaje);
@@ -120,6 +130,8 @@ function reiniciarDemo() {
   mostrarEstilos();
 }
 
+// Funciones que dibujan datos en pantalla
+
 function mostrarMensajes() {
   listaMensajes.innerHTML = "";
 
@@ -170,6 +182,8 @@ function mostrarEstilos(idEstiloActivo) {
     listaEstilos.appendChild(boton);
   }
 }
+
+// Eventos iniciales
 
 botonAnalizar.addEventListener("click", analizarLead);
 botonReiniciar.addEventListener("click", reiniciarDemo);
