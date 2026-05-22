@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sales Lead Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Demo mock</p>
+          <h1>Sales Lead Assistant</h1>
+        </div>
+        <button id="boton-reiniciar" class="secondary-button" type="button">Reiniciar</button>
+      </header>
+
+      <section class="workspace">
+        <aside class="panel">
+          <h2>Mensajes</h2>
+          <div id="lista-mensajes" class="message-list"></div>
+        </aside>
+
+        <section class="panel main-panel">
+          <div class="selected-message">
+            <p class="section-label">Mensaje elegido</p>
+            <p id="mensaje-elegido" class="message-preview">Elegí un mensaje para empezar.</p>
+            <button id="boton-analizar" class="primary-button" type="button" disabled>
+              Analizar lead
+            </button>
+          </div>
+
+          <div class="results-grid">
+            <section class="result-block">
+              <h2>Brief comercial</h2>
+              <p id="brief-comercial" class="empty-text">Todavía no hay análisis.</p>
+            </section>
+
+            <section class="result-block">
+              <h2>JSON técnico</h2>
+              <pre id="json-tecnico" class="json-box">{}</pre>
+            </section>
+          </div>
+
+          <section class="response-area">
+            <h2>Estilo de respuesta</h2>
+            <div id="lista-estilos" class="style-list"></div>
+
+            <h2>Respuesta sugerida</h2>
+            <p id="respuesta-sugerida" class="answer-box">Elegí un estilo permitido.</p>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
