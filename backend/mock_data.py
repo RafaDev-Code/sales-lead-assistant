@@ -1,11 +1,8 @@
-"""Mock data for the Sales Lead Assistant demo.
+"""Datos simulados para la demo Sales Lead Assistant.
 
-This file defines the fixed messages, response styles, and style rules used by
-the public demo. It has no external dependencies.
+Este archivo no usa FastAPI ni OpenAI. Solo define datos fijos y reglas
+simples para que la demo pueda funcionar en modo simulado.
 """
-
-from __future__ import annotations
-
 
 RESPONSE_STYLES = [
     {"id": "friendly", "label": "Amable"},
@@ -71,92 +68,131 @@ LEAD_MESSAGES = [
 ]
 
 
-def get_style_ids() -> set[str]:
-    return {style["id"] for style in RESPONSE_STYLES}
+def get_style_ids():
+    style_ids = []
+
+    for style in RESPONSE_STYLES:
+        style_ids.append(style["id"])
+
+    return style_ids
 
 
-def get_message_ids() -> set[str]:
-    return {message["id"] for message in LEAD_MESSAGES}
+def get_message_ids():
+    message_ids = []
+
+    for message in LEAD_MESSAGES:
+        message_ids.append(message["id"])
+
+    return message_ids
 
 
-def get_allowed_style_ids(message_id: str) -> set[str]:
+def find_message(message_id):
     for message in LEAD_MESSAGES:
         if message["id"] == message_id:
-            return set(message["allowed_style_ids"])
+            return message
 
-    raise ValueError(f"Unknown message id: {message_id}")
-
-
-def get_disabled_style_ids(message_id: str) -> set[str]:
-    return get_style_ids() - get_allowed_style_ids(message_id)
+    raise ValueError("Mensaje desconocido: " + message_id)
 
 
-def is_style_allowed(message_id: str, style_id: str) -> bool:
-    return style_id in get_allowed_style_ids(message_id)
+def get_allowed_style_ids(message_id):
+    message = find_message(message_id)
+    return message["allowed_style_ids"]
 
 
-def validate_mock_data() -> None:
+def get_disabled_style_ids(message_id):
+    allowed_style_ids = get_allowed_style_ids(message_id)
+    disabled_style_ids = []
+
+    for style in RESPONSE_STYLES:
+        style_id = style["id"]
+
+        if style_id not in allowed_style_ids:
+            disabled_style_ids.append(style_id)
+
+    return disabled_style_ids
+
+
+def is_style_allowed(message_id, style_id):
+    allowed_style_ids = get_allowed_style_ids(message_id)
+    return style_id in allowed_style_ids
+
+
+def has_duplicate_values(values):
+    seen_values = []
+
+    for value in values:
+        if value in seen_values:
+            return True
+
+        seen_values.append(value)
+
+    return False
+
+
+def validate_mock_data():
     message_ids = get_message_ids()
     style_ids = get_style_ids()
 
-    if len(message_ids) != len(LEAD_MESSAGES):
-        raise ValueError("Message ids must be unique")
+    if has_duplicate_values(message_ids):
+        raise ValueError("Los ids de mensajes no se pueden repetir")
 
-    if len(style_ids) != len(RESPONSE_STYLES):
-        raise ValueError("Style ids must be unique")
+    if has_duplicate_values(style_ids):
+        raise ValueError("Los ids de estilos no se pueden repetir")
 
     if len(LEAD_MESSAGES) != 5:
-        raise ValueError("The demo must start with five lead messages")
+        raise ValueError("La demo debe empezar con cinco mensajes")
 
     if len(RESPONSE_STYLES) != 6:
-        raise ValueError("The demo must start with six response styles")
+        raise ValueError("La demo debe empezar con seis estilos de respuesta")
 
     for message in LEAD_MESSAGES:
-        allowed_style_ids = set(message["allowed_style_ids"])
+        allowed_style_ids = message["allowed_style_ids"]
 
-        if not allowed_style_ids:
-            raise ValueError(f"Message {message['id']} has no allowed styles")
+        if len(allowed_style_ids) == 0:
+            raise ValueError("El mensaje no tiene estilos permitidos")
 
-        unknown_style_ids = allowed_style_ids - style_ids
-        if unknown_style_ids:
-            raise ValueError(
-                f"Message {message['id']} references unknown styles: "
-                f"{sorted(unknown_style_ids)}"
-            )
+        for style_id in allowed_style_ids:
+            if style_id not in style_ids:
+                raise ValueError("El mensaje usa un estilo que no existe")
 
-    expected_rules = {
-        "price_question": {
-            "allowed": {"friendly", "direct", "consultative", "ask_more_data"},
-            "disabled": {"handle_objection", "schedule_call"},
+    expected_rules = [
+        {
+            "message_id": "price_question",
+            "allowed": ["friendly", "direct", "consultative", "ask_more_data"],
+            "disabled": ["schedule_call", "handle_objection"],
         },
-        "low_budget": {
-            "allowed": {
+        {
+            "message_id": "low_budget",
+            "allowed": [
                 "friendly",
                 "consultative",
                 "ask_more_data",
                 "handle_objection",
-            },
-            "disabled": {"direct", "schedule_call"},
+            ],
+            "disabled": ["direct", "schedule_call"],
         },
-        "demo_request": {
-            "allowed": {"friendly", "direct", "schedule_call"},
-            "disabled": {"consultative", "ask_more_data", "handle_objection"},
+        {
+            "message_id": "demo_request",
+            "allowed": ["friendly", "direct", "schedule_call"],
+            "disabled": ["consultative", "ask_more_data", "handle_objection"],
         },
-    }
+    ]
 
-    for message_id, expected in expected_rules.items():
-        if get_allowed_style_ids(message_id) != expected["allowed"]:
-            raise ValueError(f"Allowed styles changed for {message_id}")
+    for rule in expected_rules:
+        message_id = rule["message_id"]
 
-        if get_disabled_style_ids(message_id) != expected["disabled"]:
-            raise ValueError(f"Disabled styles changed for {message_id}")
+        if get_allowed_style_ids(message_id) != rule["allowed"]:
+            raise ValueError("Cambiaron los estilos permitidos de " + message_id)
+
+        if get_disabled_style_ids(message_id) != rule["disabled"]:
+            raise ValueError("Cambiaron los estilos bloqueados de " + message_id)
 
 
-def print_mock_data_summary() -> None:
+def print_mock_data_summary():
     validate_mock_data()
-    print(f"Lead messages: {len(LEAD_MESSAGES)}")
-    print(f"Response styles: {len(RESPONSE_STYLES)}")
-    print("Mock data is valid")
+    print("Mensajes simulados:", len(LEAD_MESSAGES))
+    print("Estilos de respuesta:", len(RESPONSE_STYLES))
+    print("Datos simulados validos")
 
 
 if __name__ == "__main__":
