@@ -1,9 +1,12 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from backend.mock_data import (
     analizar_mensaje,
     estilo_esta_permitido,
     generar_respuesta,
+    LEAD_MESSAGES,
+    RESPONSE_STYLES,
     obtener_ids_de_estilos,
     obtener_ids_de_mensajes,
 )
@@ -11,12 +14,29 @@ from backend.mock_data import (
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:4173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Endpoints
 
 @app.get("/health")
 def verificar_salud():
     return {"status": "ok"}
+
+
+@app.get("/mensajes")
+def listar_mensajes():
+    return LEAD_MESSAGES
+
+
+@app.get("/estilos")
+def listar_estilos():
+    return RESPONSE_STYLES
 
 
 @app.get("/analizar/{id_mensaje}")
