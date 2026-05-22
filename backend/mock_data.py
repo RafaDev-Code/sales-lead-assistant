@@ -68,75 +68,75 @@ LEAD_MESSAGES = [
 ]
 
 
-def get_style_ids():
-    style_ids = []
+def obtener_ids_de_estilos():
+    ids_de_estilos = []
 
-    for style in RESPONSE_STYLES:
-        style_ids.append(style["id"])
+    for estilo in RESPONSE_STYLES:
+        ids_de_estilos.append(estilo["id"])
 
-    return style_ids
-
-
-def get_message_ids():
-    message_ids = []
-
-    for message in LEAD_MESSAGES:
-        message_ids.append(message["id"])
-
-    return message_ids
+    return ids_de_estilos
 
 
-def find_message(message_id):
-    for message in LEAD_MESSAGES:
-        if message["id"] == message_id:
-            return message
+def obtener_ids_de_mensajes():
+    ids_de_mensajes = []
 
-    raise ValueError("Mensaje desconocido: " + message_id)
+    for mensaje in LEAD_MESSAGES:
+        ids_de_mensajes.append(mensaje["id"])
 
-
-def get_allowed_style_ids(message_id):
-    message = find_message(message_id)
-    return message["allowed_style_ids"]
+    return ids_de_mensajes
 
 
-def get_disabled_style_ids(message_id):
-    allowed_style_ids = get_allowed_style_ids(message_id)
-    disabled_style_ids = []
+def buscar_mensaje(id_mensaje):
+    for mensaje in LEAD_MESSAGES:
+        if mensaje["id"] == id_mensaje:
+            return mensaje
 
-    for style in RESPONSE_STYLES:
-        style_id = style["id"]
-
-        if style_id not in allowed_style_ids:
-            disabled_style_ids.append(style_id)
-
-    return disabled_style_ids
+    raise ValueError("Mensaje desconocido: " + id_mensaje)
 
 
-def is_style_allowed(message_id, style_id):
-    allowed_style_ids = get_allowed_style_ids(message_id)
-    return style_id in allowed_style_ids
+def obtener_estilos_permitidos(id_mensaje):
+    mensaje = buscar_mensaje(id_mensaje)
+    return mensaje["allowed_style_ids"]
 
 
-def has_duplicate_values(values):
-    seen_values = []
+def obtener_estilos_bloqueados(id_mensaje):
+    estilos_permitidos = obtener_estilos_permitidos(id_mensaje)
+    estilos_bloqueados = []
 
-    for value in values:
-        if value in seen_values:
+    for estilo in RESPONSE_STYLES:
+        id_estilo = estilo["id"]
+
+        if id_estilo not in estilos_permitidos:
+            estilos_bloqueados.append(id_estilo)
+
+    return estilos_bloqueados
+
+
+def estilo_esta_permitido(id_mensaje, id_estilo):
+    estilos_permitidos = obtener_estilos_permitidos(id_mensaje)
+    return id_estilo in estilos_permitidos
+
+
+def tiene_valores_repetidos(valores):
+    valores_vistos = []
+
+    for valor in valores:
+        if valor in valores_vistos:
             return True
 
-        seen_values.append(value)
+        valores_vistos.append(valor)
 
     return False
 
 
-def validate_mock_data():
-    message_ids = get_message_ids()
-    style_ids = get_style_ids()
+def validar_datos_simulados():
+    ids_de_mensajes = obtener_ids_de_mensajes()
+    ids_de_estilos = obtener_ids_de_estilos()
 
-    if has_duplicate_values(message_ids):
+    if tiene_valores_repetidos(ids_de_mensajes):
         raise ValueError("Los ids de mensajes no se pueden repetir")
 
-    if has_duplicate_values(style_ids):
+    if tiene_valores_repetidos(ids_de_estilos):
         raise ValueError("Los ids de estilos no se pueden repetir")
 
     if len(LEAD_MESSAGES) != 5:
@@ -145,55 +145,55 @@ def validate_mock_data():
     if len(RESPONSE_STYLES) != 6:
         raise ValueError("La demo debe empezar con seis estilos de respuesta")
 
-    for message in LEAD_MESSAGES:
-        allowed_style_ids = message["allowed_style_ids"]
+    for mensaje in LEAD_MESSAGES:
+        estilos_permitidos = mensaje["allowed_style_ids"]
 
-        if len(allowed_style_ids) == 0:
+        if len(estilos_permitidos) == 0:
             raise ValueError("El mensaje no tiene estilos permitidos")
 
-        for style_id in allowed_style_ids:
-            if style_id not in style_ids:
+        for id_estilo in estilos_permitidos:
+            if id_estilo not in ids_de_estilos:
                 raise ValueError("El mensaje usa un estilo que no existe")
 
-    expected_rules = [
+    reglas_esperadas = [
         {
-            "message_id": "price_question",
-            "allowed": ["friendly", "direct", "consultative", "ask_more_data"],
-            "disabled": ["schedule_call", "handle_objection"],
+            "id_mensaje": "price_question",
+            "permitidos": ["friendly", "direct", "consultative", "ask_more_data"],
+            "bloqueados": ["schedule_call", "handle_objection"],
         },
         {
-            "message_id": "low_budget",
-            "allowed": [
+            "id_mensaje": "low_budget",
+            "permitidos": [
                 "friendly",
                 "consultative",
                 "ask_more_data",
                 "handle_objection",
             ],
-            "disabled": ["direct", "schedule_call"],
+            "bloqueados": ["direct", "schedule_call"],
         },
         {
-            "message_id": "demo_request",
-            "allowed": ["friendly", "direct", "schedule_call"],
-            "disabled": ["consultative", "ask_more_data", "handle_objection"],
+            "id_mensaje": "demo_request",
+            "permitidos": ["friendly", "direct", "schedule_call"],
+            "bloqueados": ["consultative", "ask_more_data", "handle_objection"],
         },
     ]
 
-    for rule in expected_rules:
-        message_id = rule["message_id"]
+    for regla in reglas_esperadas:
+        id_mensaje = regla["id_mensaje"]
 
-        if get_allowed_style_ids(message_id) != rule["allowed"]:
-            raise ValueError("Cambiaron los estilos permitidos de " + message_id)
+        if obtener_estilos_permitidos(id_mensaje) != regla["permitidos"]:
+            raise ValueError("Cambiaron los estilos permitidos de " + id_mensaje)
 
-        if get_disabled_style_ids(message_id) != rule["disabled"]:
-            raise ValueError("Cambiaron los estilos bloqueados de " + message_id)
+        if obtener_estilos_bloqueados(id_mensaje) != regla["bloqueados"]:
+            raise ValueError("Cambiaron los estilos bloqueados de " + id_mensaje)
 
 
-def print_mock_data_summary():
-    validate_mock_data()
+def mostrar_resumen_de_datos_simulados():
+    validar_datos_simulados()
     print("Mensajes simulados:", len(LEAD_MESSAGES))
     print("Estilos de respuesta:", len(RESPONSE_STYLES))
     print("Datos simulados validos")
 
 
 if __name__ == "__main__":
-    print_mock_data_summary()
+    mostrar_resumen_de_datos_simulados()
