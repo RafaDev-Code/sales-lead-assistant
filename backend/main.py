@@ -1,9 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.config import obtener_config_publica
+from backend.config import obtener_config_publica, usar_openai
 from backend.mock_data import (
     analizar_mensaje,
+    buscar_estilo,
+    buscar_mensaje,
     estilo_esta_permitido,
     generar_respuesta,
     LEAD_MESSAGES,
@@ -11,6 +13,7 @@ from backend.mock_data import (
     obtener_ids_de_estilos,
     obtener_ids_de_mensajes,
 )
+from backend.openai_client import generar_respuesta_openai
 
 
 app = FastAPI()
@@ -66,5 +69,17 @@ def responder_lead(id_mensaje, id_estilo):
             status_code=400,
             detail="Este estilo no aplica al mensaje elegido",
         )
+
+    if usar_openai():
+        mensaje = buscar_mensaje(id_mensaje)
+        estilo = buscar_estilo(id_estilo)
+        respuesta = generar_respuesta_openai(mensaje["text"], estilo["label"])
+
+        return {
+            "id_mensaje": id_mensaje,
+            "id_estilo": id_estilo,
+            "mensaje": mensaje["text"],
+            "respuesta": respuesta,
+        }
 
     return generar_respuesta(id_mensaje, id_estilo)

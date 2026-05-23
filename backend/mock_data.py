@@ -232,6 +232,14 @@ def buscar_respuesta(id_mensaje, id_estilo):
     raise ValueError("Respuesta desconocida")
 
 
+def buscar_estilo(id_estilo):
+    for estilo in RESPONSE_STYLES:
+        if estilo["id"] == id_estilo:
+            return estilo
+
+    raise ValueError("Estilo desconocido: " + id_estilo)
+
+
 def obtener_estilos_permitidos(id_mensaje):
     mensaje = buscar_mensaje(id_mensaje)
     return mensaje["allowed_style_ids"]
