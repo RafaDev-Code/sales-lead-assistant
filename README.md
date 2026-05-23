@@ -1,71 +1,89 @@
 # Sales Lead Assistant
 
-Sales Lead Assistant es una demo web que simula un asistente comercial para analizar mensajes de leads y generar respuestas de venta en español.
+Sales Lead Assistant is a web demo that simulates a sales assistant for inbound leads.
 
-La app trabaja con mensajes predeterminados, analiza la intención del lead, muestra un brief comercial, expone un JSON técnico y habilita solo los estilos de respuesta que aplican al mensaje elegido.
+The app lets a user choose a predefined customer message, analyze the lead, review a sales brief, inspect a technical JSON response, and generate a sales reply in Spanish using only the response styles that match the selected message.
 
-## Qué hace
+## Features
 
-- Muestra mensajes predeterminados de clientes.
-- Analiza el mensaje seleccionado.
-- Devuelve un brief comercial para ventas.
-- Muestra un JSON técnico con intención, prioridad, datos faltantes y siguiente paso.
-- Habilita o bloquea estilos de respuesta según el contexto.
-- Genera una respuesta comercial en español.
-- Funciona en modo simulado por defecto.
+- Predefined lead messages.
+- Lead analysis with sales brief and technical JSON.
+- Context-aware response styles.
+- Disabled response styles when they do not apply.
+- Spanish sales replies.
+- Mock mode by default.
+- Optional OpenAI mode using local environment variables.
 
 ## Stack
 
 - Backend: FastAPI
-- Frontend: HTML, CSS y JavaScript
-- Modo por defecto: mock mode
+- Frontend: HTML, CSS, JavaScript
+- AI provider: mock by default, OpenAI optional
 
-## Cómo correr el backend
+## Run locally
+
+Install dependencies:
 
 ```bash
 source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Start the backend:
+
+```bash
 uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-Probar salud del backend:
-
-```bash
-curl http://127.0.0.1:8000/health
-```
-
-## Cómo correr el frontend
-
-En otra terminal:
+Start the frontend in another terminal:
 
 ```bash
 python3 -m http.server 4173 --directory frontend
 ```
 
-Abrir:
+Open:
 
 ```text
 http://127.0.0.1:4173
 ```
 
-## Endpoints principales
+## Configuration
+
+The project uses mock mode by default.
+
+Example `.env` for mock mode:
+
+```env
+APP_MODE=mock
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
+```
+
+Example `.env` for local OpenAI mode:
+
+```env
+APP_MODE=openai
+OPENAI_API_KEY=your_local_api_key
+OPENAI_MODEL=gpt-4o-mini
+```
+
+Do not commit real API keys. The repository includes `.env.example` with fake values only.
+
+## API endpoints
 
 ```text
 GET /health
+GET /config
 GET /mensajes
 GET /estilos
 GET /analizar/{id_mensaje}
 GET /responder/{id_mensaje}/{id_estilo}
 ```
 
-## Seguridad y costos
+## Product decisions
 
-La demo pública usa mock mode por defecto. No necesita API keys reales y no consume créditos de OpenAI.
-
-El modo OpenAI puede agregarse más adelante usando variables de entorno locales. Las claves reales no deben guardarse en el repositorio.
-
-## Decisiones de producto
-
-- No hay input libre ilimitado en la demo pública.
-- Los estilos de respuesta inválidos se bloquean en frontend y también se validan en backend.
-- La interfaz y las respuestas están en español.
-- El JSON técnico queda visible para mostrar cómo responde la API.
+- The public demo does not use unlimited free-text input.
+- Invalid response styles are blocked in the frontend and validated again in the backend.
+- The visible interface and generated replies are in Spanish.
+- The technical JSON is visible so the API response shape can be inspected.
+- Mock mode keeps the demo safe to run without API keys or external costs.
