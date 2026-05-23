@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.config import obtener_config_publica
 from backend.mock_data import (
     analizar_mensaje,
     estilo_esta_permitido,
@@ -27,6 +28,11 @@ app.add_middleware(
 @app.get("/health")
 def verificar_salud():
     return {"status": "ok"}
+
+
+@app.get("/config")
+def ver_configuracion():
+    return obtener_config_publica()
 
 
 @app.get("/mensajes")
