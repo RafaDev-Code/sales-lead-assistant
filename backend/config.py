@@ -1,5 +1,11 @@
 import os
 
+from dotenv import load_dotenv
+
+
+# Carga las variables del archivo .env local, si existe.
+load_dotenv()
+
 
 # Configuracion de la app
 
