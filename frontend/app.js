@@ -17,6 +17,7 @@ const botonReiniciar = document.querySelector("#boton-reiniciar");
 const textoBrief = document.querySelector("#brief-comercial");
 const textoJson = document.querySelector("#json-tecnico");
 const textoRespuesta = document.querySelector("#respuesta-sugerida");
+const textoModoApp = document.querySelector("#modo-app");
 
 // Funciones auxiliares
 
@@ -42,6 +43,15 @@ function mostrarError(mensaje) {
   textoRespuesta.textContent = mensaje;
 }
 
+function mostrarModoApp(configuracion) {
+  if (configuracion.app_mode === "openai" && configuracion.openai_configurado) {
+    textoModoApp.textContent = "Modo OpenAI";
+    return;
+  }
+
+  textoModoApp.textContent = "Modo mock";
+}
+
 // Pedidos al backend
 
 async function pedirJson(url) {
@@ -56,6 +66,9 @@ async function pedirJson(url) {
 
 async function cargarDatosIniciales() {
   try {
+    const configuracion = await pedirJson(API_URL + "/config");
+    mostrarModoApp(configuracion);
+
     mensajes = await pedirJson(API_URL + "/mensajes");
     estilos = await pedirJson(API_URL + "/estilos");
     reiniciarDemo();
