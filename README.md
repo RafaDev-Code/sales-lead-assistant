@@ -4,6 +4,26 @@ Sales Lead Assistant is a web demo that simulates a sales assistant for inbound 
 
 The app lets a user choose a predefined customer message, analyze the lead, review a sales brief, inspect a technical JSON response, and generate a sales reply in Spanish using only the response styles that match the selected message.
 
+## Preview
+
+![Sales Lead Assistant running in mock mode](assets/screenshot.png)
+
+## Workflow
+
+```mermaid
+flowchart TD
+    A[Select a predefined customer message] --> B[Analyze the lead]
+    B --> C[Show sales brief]
+    B --> D[Show technical JSON]
+    C --> E[Enable matching response styles]
+    D --> E
+    E --> F[Select an allowed response style]
+    F --> G[Generate Spanish sales reply]
+    G --> H{Configured mode}
+    H --> I[Mock mode by default]
+    H --> J[OpenAI mode with local .env]
+```
+
 ## Features
 
 - Predefined lead messages.
